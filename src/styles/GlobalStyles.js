@@ -44,7 +44,7 @@ body .Toasify .Toastify_toast-container .Toast_toast--error{
 
 
 export const Container = styled.section`
-max-width: 360px;
+max-width: 480px;
 background-color: white;
 margin: 30px auto;
 padding: 30px;
