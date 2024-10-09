@@ -8,10 +8,9 @@ import Alunos from "../pages/Alunos";
 import Register from "../pages/Register";
 import Fotos from "../pages/Fotos";
 import Page404 from "../pages/Page404";
-import { toast } from "react-toastify";
+
 
 export default function Routes() {
-  toast.success("oie");
   return (
     <Switch>
       <MyRoute exact path="/" component={Alunos} isClosed={false} />
