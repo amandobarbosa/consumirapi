@@ -1,9 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container } from "../../styles/GlobalStyles";
+import { Form } from "./styled";
+import { toast } from "react-toastify";
+import { isEmail } from "validator";
+import * as actions from "../../store/modules/auth/actions";
+import { useDispatch } from "react-redux";
+
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    let formErros = false;
+    if (password.length < 3 || password.length > 255) {
+      formErros = true;
+      toast.error("Senha inválida");
+    }
+    if (!isEmail(email)) {
+      formErros = true;
+      toast.error("Email inválido");
+    }
+    if (formErros) return;
+
+    dispatch(actions.loginRequest({email, password}))
+    
+  };
+
   return (
     <Container>
       <h1>Login</h1>
+
+      <Form onSubmit={handleSubmit}>
+        <input
+          placeholder="Seu email"
+          type="text"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          placeholder="sua senha"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Acessar</button>
+      </Form>
     </Container>
   );
 }
