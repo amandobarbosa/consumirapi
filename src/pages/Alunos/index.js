@@ -6,19 +6,24 @@ import { FaUserCircle, FaEdit, FaWindowClose } from "react-icons/fa";
 import { get } from "lodash";
 import { ProfilePicture } from "./styled";
 import { Link } from "react-router-dom";
+import Loading from "../../componentes/Loading";
 
 export default function Alunos() {
   const [alunos, setAlunos] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function getData() {
+      setIsLoading(true)
       const response = await axios.get("/");
       setAlunos(response.data.data);
+      setIsLoading(false)
     }
     getData();
   }, []);
   return (
     <Container>
+      <Loading isloading={isLoading} />
       <h1>Alunos</h1>
       <AlunoContainer>
         {alunos.map((aluno, index) => (

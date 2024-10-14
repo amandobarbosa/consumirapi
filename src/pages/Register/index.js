@@ -5,11 +5,13 @@ import { toast } from "react-toastify";
 import { isEmail } from "validator";
 // import axios from "../../services/axios";
 import history from "../../services/history";
+import Loading from "../../componentes/Loading";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [nome, setNome] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -27,6 +29,7 @@ export default function Register() {
       toast.error("Email inválido");
     }
     if (formErros) return;
+    setIsLoading(true);
 
     try {
       // await axios.post('/users', {
@@ -35,16 +38,20 @@ export default function Register() {
       //   email: email
       // })
       toast.success("Você fez seu cadastro");
+      setIsLoading(false);
+
       history.push("/login");
       setTimeout(() => {
         window.location.reload();
       }, 1500);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   }
   return (
     <Container>
+      <Loading isloading={isLoading} />
       <h1>Crie sua conta</h1>
 
       <Form onSubmit={handleSubmit}>

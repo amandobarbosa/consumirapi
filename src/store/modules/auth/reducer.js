@@ -14,11 +14,17 @@ export default function auth(state = initialState, action) {
       newState.isLoggedIn = true
       newState.token = action.payload.token
       newState.user = action.payload.user
+      newState.isLoadind = false
 
       return newState;
     }
     case types.LOGIN_FAILURE: {
       const newState = { ...initialState };
+      return newState;
+    }
+    case types.LOGIN_REQUEST: {
+      const newState = { ...state };
+      newState.isLoadind = true
       return newState;
     }
     default: {
