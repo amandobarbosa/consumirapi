@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Container } from "../../styles/GlobalStyles";
 import { get } from "lodash";
 import PropTypes from "prop-types";
-import Form from './styled'
-import { isEmail, isInt, isFloat,} from "validator";
+import { Form } from "./styled";
+import { isEmail, isInt, isFloat } from "validator";
 import { toast } from "react-toastify";
-import Loading from '../../componentes/Loading/index'
+import Loading from "../../componentes/Loading/index";
 import axios from "../../services/axios";
 import history from "../../services/history";
+import { useDispatch } from "react-redux";
+import * as actions from "../../store/modules/auth/actions";
 
 export default function Aluno({ match }) {
   const id = get(match, "params.id", 0);
@@ -19,34 +21,36 @@ export default function Aluno({ match }) {
   const [peso, setPeso] = useState("");
   const [isLoading, setIsloading] = useState(false);
 
-  useEffect(()=>{
-    if(!id) return
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!id) return;
     async function getData() {
       try {
-        setIsloading(true)
-        const {data} = await axios.get(`/alunos/${id}`)
-        const Foto = get(data, 'Fotos[0].url', '')
+        setIsloading(true);
+        const { data } = await axios.get(`/alunos/${id}`);
+        const Foto = get(data, "Fotos[0].url", "");
 
-        setNome(data.nome)
-        setSobrenome(data.sobrenome)
-        setIdade(data.idade)
-        setEmail(data.email)
-        setPeso(data.peso)
-        setAltura(data.altura)
+        setNome(data.nome);
+        setSobrenome(data.sobrenome);
+        setIdade(data.idade);
+        setEmail(data.email);
+        setPeso(data.peso);
+        setAltura(data.altura);
       } catch (error) {
-        setIsloading(false)
-        const status = get(error, 'response.status', 0)
-        const errors = get(error, 'response.errors', 0)
-        if(status === 400){
-          errors.map(error=> toast.error(error))
-          history.push('/')
+        setIsloading(false);
+        const status = get(error, "response.status", 0);
+        const errors = get(error, "response.errors", 0);
+        if (status === 400) {
+          errors.map((error) => toast.error(error));
+          history.push("/");
         }
       }
     }
-    getData()
-  },[id])
+    getData();
+  }, [id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let formErrors = false;
 
@@ -74,12 +78,53 @@ export default function Aluno({ match }) {
       toast.error("peso inválida");
       formErrors = true;
     }
+    if (formErrors) return;
 
+    try {
+      setIsloading(true);
+      if (id) {
+        //editando
+        await axios.put(`/alunos/${id}`, {
+          nome,
+          sobrenome,
+          email,
+          idade,
+          peso,
+          altura,
+        });
+        toast.success("Aluno(a) editado com sucesso");
+      } else {
+        //criando
 
+        const { data } = await axios.post(`/alunos/${id}`, {
+          nome,
+          sobrenome,
+          email,
+          idade,
+          peso,
+          altura,
+        });
+        toast.success("Aluno(a) criado");
+        history.push(`aluno/${data.id}/edit`)
+      }
+      setIsloading(false);
+    } catch (error) {
+      const status = get(error, "response.status", 0);
+      const data = get(error, "response.data", {});
+      const errors = get(data, "errors", []);
+
+      if (errors.length > 0) {
+        errors.map((error) => toast.error(error));
+      } else {
+        toast.error("Erro desconhecido");
+      }
+      if (status === 401) dispatch(actions.loginFailure());
+    }
   };
 
   return (
     <Container>
+      <Loading isLoading={isLoading} />
       <h1>{id ? "Editar aluno" : "Novo Aluno"}</h1>
 
       <Form onSubmit={handleSubmit}>
