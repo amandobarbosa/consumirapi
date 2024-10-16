@@ -9,7 +9,7 @@ import {
   FaWindowClose,
 } from "react-icons/fa";
 import { get } from "lodash";
-import { ProfilePicture } from "./styled";
+import { ProfilePicture, NovoAluno } from "./styled";
 import { Link } from "react-router-dom";
 import Loading from "../../componentes/Loading";
 import { toast } from "react-toastify";
@@ -51,13 +51,18 @@ export default function Alunos() {
       } else {
         toast.error("Ocorreu um erro ao excluir");
       }
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
   return (
     <Container>
       <Loading isloading={isLoading} />
+
+
       <h1>Alunos</h1>
+
+<NovoAluno to="/aluno">Novo aluno</NovoAluno>
+
       <AlunoContainer>
         {alunos.map((aluno, index) => (
           <div key={index}>
